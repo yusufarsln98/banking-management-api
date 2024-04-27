@@ -9,13 +9,13 @@ router.get<{}, ICustomer[]>('/', async (req, res) => {
   res.json(customers);
 });
 
-router.post<{}, ICustomer, ICustomer>('/', async (req, res) => {
-  const customer = await Customer.create(req.body);
+router.get<{ id: string }, ICustomer | null>('/:id', async (req, res) => {
+  const customer = await Customer.findById(req.params.id);
   res.json(customer);
 });
 
-router.get<{ id: string }, ICustomer | null>('/:id', async (req, res) => {
-  const customer = await Customer.findById(req.params.id);
+router.post<{}, ICustomer, ICustomer>('/', async (req, res) => {
+  const customer = await Customer.create(req.body);
   res.json(customer);
 });
 
