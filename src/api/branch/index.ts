@@ -3,7 +3,6 @@ import express from 'express';
 import Branch, { IBranch } from '../../models/branch.model';
 import { DeleteResult } from 'mongodb';
 import ErrorResponse from '../../interfaces/ErrorResponse';
-import Account from '../../models/account.model';
 
 const router = express.Router();
 
@@ -16,21 +15,28 @@ router.get<{}, IBranch[] | ErrorResponse | null>('/', async (req, res) => {
   }
 });
 
-// Get a list of branches along with the total number of accounts associated with each branch.
 router.get<
   {},
   { branch: IBranch; totalAccounts: number }[] | ErrorResponse | null
 >('/accounts', async (req, res) => {
   try {
-    const branchs = await Branch.find();
-    const branchsWithTotalAccounts = await Promise.all(
-      branchs.map(async (branch) => {
-        const totalAccounts = await Account.countDocuments({
-          branchId: branch._id,
-        });
-        return { branch, totalAccounts };
-      }),
-    );
+    const branchsWithTotalAccounts = await Branch.aggregate([
+      {
+        $lookup: {
+          from: 'accounts',
+          localField: '_id',
+          foreignField: 'branchId',
+          as: 'accounts',
+        },
+      },
+      {
+        $project: {
+          _id: true,
+          totalAccounts: { $size: '$accounts' },
+          branchName: true,
+        },
+      },
+    ]);
     res.json(branchsWithTotalAccounts);
   } catch (error: ErrorResponse | any) {
     res.status(404).json({ message: error.message, stack: error.stack });
