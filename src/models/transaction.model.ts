@@ -2,8 +2,10 @@ import mongoose from 'mongoose';
 
 /*
     - `_id` (ObjectId): Unique identifier for the transaction (primary key).
-    - `accountId` (ObjectId): Reference to the account document this transaction belongs to (foreign key).
-    - `transactionType` (String): Type of transaction (e.g., deposit, withdrawal, transfer).
+    - `transactionParties: {
+        - `sender` (ObjectId): ID of the account that sent the transaction.
+        - `recipient` (ObjectId): ID of the account that received the transaction.
+      }` (Object): Nested object containing the sender and recipient account IDs.
     - `amount` (Decimal): Amount of the transaction.
     - `timestamp` (ISODate): Date and time the transaction occurred.
     - `description` (String): Optional description of the transaction.
@@ -11,16 +13,20 @@ import mongoose from 'mongoose';
 
 export interface ITransaction {
   _id: mongoose.Types.ObjectId;
-  accountId: mongoose.Types.ObjectId;
-  transactionType: string;
+  transactionParties: {
+    sender: mongoose.Types.ObjectId;
+    recipient: mongoose.Types.ObjectId;
+  };
   amount: number;
   timestamp: Date;
   description?: string;
 }
 
 const transactionSchema = new mongoose.Schema<ITransaction>({
-  accountId: mongoose.Schema.Types.ObjectId,
-  transactionType: String,
+  transactionParties: {
+    sender: mongoose.Schema.Types.ObjectId,
+    recipient: mongoose.Schema.Types.ObjectId,
+  },
   amount: Number,
   timestamp: Date,
   description: String,
