@@ -1,16 +1,16 @@
 import express from 'express';
 
 import MessageResponse from '../interfaces/MessageResponse';
-import emojis from './emojis';
+import route_template from './route_template';
 
 const router = express.Router();
 
 router.get<{}, MessageResponse>('/', (req, res) => {
   res.json({
-    message: 'API - 👋🌎🌍🌏',
+    message: 'Banking Management System API V1 🚀',
   });
 });
 
-router.use('/emojis', emojis);
+router.use('/template', route_template);
 
 export default router;
