@@ -1,8 +1,8 @@
 import express from 'express';
 
 import MessageResponse from '../interfaces/MessageResponse';
-import route_template from './route_template';
 import customer from './customer';
+import account from './account';
 
 const router = express.Router();
 
@@ -13,6 +13,6 @@ router.get<{}, MessageResponse>('/', (req, res) => {
 });
 
 router.use('/customer', customer);
-router.use('/template', route_template);
+router.use('/account', account);
 
 export default router;
