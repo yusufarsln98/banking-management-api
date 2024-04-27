@@ -6,7 +6,6 @@ import mongoose from 'mongoose';
     - `accountNumber` (String): Unique account number for identification.
     - `balance` (Decimal): Current balance of the account.
     - `openingDate` (Date): Date the account was opened.
-    - `transactions` (Array of ObjectIds): References to transaction documents associated with this account (optional, for scalability).
 */
 
 export interface IAccount {
@@ -15,7 +14,6 @@ export interface IAccount {
   accountNumber: string;
   balance: number;
   openingDate: Date;
-  transactions: mongoose.Types.ObjectId[];
 }
 
 const accountSchema = new mongoose.Schema<IAccount>({
@@ -23,7 +21,6 @@ const accountSchema = new mongoose.Schema<IAccount>({
   accountNumber: String,
   balance: Number,
   openingDate: Date,
-  transactions: [mongoose.Schema.Types.ObjectId],
 });
 
 const Account = mongoose.model<IAccount>('Account', accountSchema);
