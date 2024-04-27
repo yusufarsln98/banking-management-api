@@ -1,16 +1,16 @@
 import mongoose from 'mongoose';
 
 /*
-    - `_id` (ObjectId): Unique identifier for the branch (primary key).
-    - `branchName` (String): Name of the branch.
-    - `address` (Object): 
-        - `streetAddress` (String): Branch street address.
-        - `city` (String): Branch city.
-        - `state` (String): Branch state/province.
-        - `postalCode` (String): Branch postal code.
-    - `contactInfo` (Object): 
-        - `phoneNumbers` (Array of Strings): List of branch phone numbers.
-        - `email` (String): Branch email address.
+  - `_id` (ObjectId): Unique identifier for the branch (primary key).
+  - `branchName` (String): Name of the branch.
+  - `address` (Object): 
+    - `streetAddress` (String): Branch street address.
+    - `city` (String): Branch city.
+    - `state` (String): Branch state/province.
+    - `postalCode` (String): Branch postal code.
+  - `contactInfo` (Object): 
+    - `phoneNumbers` (Array of Strings): List of branch phone numbers.
+    - `email` (String): Branch email address.
 */
 
 export interface IBranch {
