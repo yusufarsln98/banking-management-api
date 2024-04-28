@@ -3,6 +3,8 @@ import express from 'express';
 import Account, { IAccount } from '../../models/account.model';
 import { DeleteResult } from 'mongodb';
 import ErrorResponse from '../../interfaces/ErrorResponse';
+import Customer, { ICustomer } from '../../models/customer.model';
+import Transaction, { ITransaction } from '../../models/transaction.model';
 
 const router = express.Router();
 
@@ -27,24 +29,37 @@ router.get<{ id: string }, IAccount | ErrorResponse | null>(
   },
 );
 
-// Find the total balance of a customer across all accounts.
-router.get<
-  { customerId: string },
-  { totalBalance: number } | ErrorResponse | null
->('/totalBalance/:customerId', async (req, res) => {
-  try {
-    const accounts = await Account.find({
-      customerId: req.params.customerId,
-    });
-    const totalBalance = accounts.reduce(
-      (acc, account) => acc + account.balance,
-      0,
-    );
-    res.json({ totalBalance });
-  } catch (error: ErrorResponse | any) {
-    res.status(404).json({ message: error.message, stack: error.stack });
-  }
-});
+// owner of the account
+router.get<{ id: string }, ICustomer | ErrorResponse | null>(
+  '/:id/customer',
+  async (req, res) => {
+    try {
+      const account = await Account.findById(req.params.id).select(
+        'customerId',
+      );
+      const customer = await Customer.findById(account?.customerId);
+      res.json(customer);
+    } catch (error: ErrorResponse | any) {
+      res.status(404).json({ message: error.message, stack: error.stack });
+    }
+  },
+);
+
+// get transactions of an account
+router.get<{ id: string }, ITransaction[] | ErrorResponse | null>(
+  '/:id/transactions',
+  async (req, res) => {
+    try {
+      // if accountId or recepientId matches the accountId param
+      const transactions = await Transaction.find({
+        $or: [{ accountId: req.params.id }, { recipientId: req.params.id }],
+      });
+      res.json(transactions);
+    } catch (error: ErrorResponse | any) {
+      res.status(404).json({ message: error.message, stack: error.stack });
+    }
+  },
+);
 
 router.post<{}, IAccount | ErrorResponse | null>('/', async (req, res) => {
   try {

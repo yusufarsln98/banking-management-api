@@ -3,6 +3,8 @@ import express from 'express';
 import Branch, { IBranch } from '../../models/branch.model';
 import { DeleteResult } from 'mongodb';
 import ErrorResponse from '../../interfaces/ErrorResponse';
+import Account, { IAccount } from '../../models/account.model';
+import Transaction, { ITransaction } from '../../models/transaction.model';
 
 const router = express.Router();
 
@@ -18,7 +20,7 @@ router.get<{}, IBranch[] | ErrorResponse | null>('/', async (req, res) => {
 router.get<
   {},
   { branch: IBranch; totalAccounts: number }[] | ErrorResponse | null
->('/accounts', async (req, res) => {
+>('/totalAccounts', async (req, res) => {
   try {
     const branchsWithTotalAccounts = await Branch.aggregate([
       {
@@ -49,6 +51,38 @@ router.get<{ id: string }, IBranch | ErrorResponse | null>(
     try {
       const branch = await Branch.findById(req.params.id);
       res.json(branch);
+    } catch (error: ErrorResponse | any) {
+      res.status(404).json({ message: error.message, stack: error.stack });
+    }
+  },
+);
+
+// get all accounts of a branch
+router.get<{ id: string }, IAccount[] | ErrorResponse | null>(
+  '/:id/accounts',
+  async (req, res) => {
+    try {
+      const accounts = await Account.find({ branchId: req.params.id });
+      res.json(accounts);
+    } catch (error: ErrorResponse | any) {
+      res.status(404).json({ message: error.message, stack: error.stack });
+    }
+  },
+);
+
+// get all transactions of a branch in its all accounts
+router.get<{ id: string }, ITransaction[] | ErrorResponse | null>(
+  '/:id/transactions',
+  async (req, res) => {
+    try {
+      const accounts = await Account.find({ branchId: req.params.id });
+      const transactions = await Transaction.find({
+        $or: [
+          { accountId: { $in: accounts.map((acc) => acc._id) } },
+          { recipientId: { $in: accounts.map((acc) => acc._id) } },
+        ],
+      });
+      res.json(transactions);
     } catch (error: ErrorResponse | any) {
       res.status(404).json({ message: error.message, stack: error.stack });
     }

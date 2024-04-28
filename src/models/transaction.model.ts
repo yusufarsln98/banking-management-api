@@ -79,11 +79,25 @@ transactionSchema.post('save', async function (transaction: ITransaction) {
     }
     account!.balance -= transaction.amount;
     await account?.save();
+  }
+
+  // if transactionType is 'transfer', add the amount to the recipient account
+  if (transaction.transactionType === TransactionType.Transfer) {
+    await Account.findByIdAndUpdate(
+      transaction.recipientId,
+      {
+        $inc: { balance: transaction.amount },
+      },
+      { new: true },
+    );
   } else if (transaction.transactionType === TransactionType.Deposit) {
-    // add the amount to the account if transactionType is 'deposit'
-    const account = await Account.findById(transaction.accountId);
-    account!.balance += transaction.amount;
-    await account?.save();
+    await Account.findByIdAndUpdate(
+      transaction.accountId,
+      {
+        $inc: { balance: transaction.amount },
+      },
+      { new: true },
+    );
   }
 });
 
