@@ -14,16 +14,37 @@ import mongoose, { InferSchemaType } from 'mongoose';
 */
 
 const branchSchema = new mongoose.Schema({
-  branchName: String,
+  branchName: {
+    type: String,
+    required: true,
+  },
   address: {
-    streetAddress: String,
-    city: String,
-    state: String,
-    postalCode: String,
+    streetAddress: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: true,
+    },
+    postalCode: {
+      type: String,
+      required: true,
+    },
   },
   contactInfo: {
-    phoneNumbers: [String],
-    email: String,
+    phoneNumbers: {
+      type: [String],
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
   },
 });
 

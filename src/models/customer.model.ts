@@ -12,17 +12,44 @@ import mongoose, { InferSchemaType } from 'mongoose';
 */
 
 const customerSchema = new mongoose.Schema({
-  firstName: String,
-  lastName: String,
-  dateOfBirth: Date,
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  dateOfBirth: {
+    type: Date,
+    required: true,
+  },
   contactInfo: {
-    phoneNumbers: [String],
-    email: String,
+    phoneNumbers: {
+      type: [String],
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
     address: {
-      streetAddress: String,
-      city: String,
-      state: String,
-      postalCode: String,
+      streetAddress: {
+        type: String,
+        required: true,
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+      state: {
+        type: String,
+        required: true,
+      },
+      postalCode: {
+        type: String,
+        required: true,
+      },
     },
   },
 });
