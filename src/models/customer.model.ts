@@ -8,7 +8,11 @@ import mongoose, { InferSchemaType } from 'mongoose';
   - `contactInfo` (Object): Nested object containing:
     - `phoneNumbers` (Array of Strings): List of customer phone numbers.
     - `email` (String): Customer's email address.
-  - `address` (Object): Same structure as before (streetAddress, city, state, postalCode).
+  - `address` (Object): Nested object containing:
+    - `streetAddress` (String): Customer's street address.
+    - `city` (String): Customer's city.
+    - `state` (String): Customer's state/province.
+    - `postalCode` (String): Customer's postal code.
 */
 
 const customerSchema = new mongoose.Schema({

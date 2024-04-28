@@ -4,7 +4,7 @@ import Account from './account.model';
 /*
   - `_id` (ObjectId): Unique identifier for the transaction (primary key).
   - `accountId` (ObjectId): ID of the account that the transaction is associated with.
-  - `recipientId` (ObjectId): ID of the account that received the transaction.
+  - `recipientId` (ObjectId): ID of the account that received the transaction. (Only for 'transfer' transactions)
   - `transactionType` (String): Type of the transaction (e.g., 'deposit', 'withdrawal', 'transfer').
   - `amount` (Decimal): Amount of the transaction.
   - `timestamp` (ISODate): Date and time the transaction occurred.

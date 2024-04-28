@@ -4,9 +4,9 @@ import Branch from './branch.model';
 
 /*
   - `_id` (ObjectId): Unique identifier for the account (primary key).
+  - `accountNumber` (String): Unique account number (generated automatically by timestamp).
   - `customerId` (ObjectId): Reference to the customer document this account belongs to (foreign key).
   - `branchId` (ObjectId): Reference to the branch document this account belongs to (foreign key).
-  - `accountNumber` (String): Unique account number for identification.
   - `balance` (Decimal): Current balance of the account.
   - `openingDate` (Date): Date the account was opened.
 */
@@ -53,7 +53,7 @@ const accountSchema = new mongoose.Schema({
 });
 
 const Account = mongoose.model('Account', accountSchema);
-
-export type IAccount = InferSchemaType<typeof accountSchema>;
-
 export default Account;
+
+// type of Account model for type checking
+export type IAccount = InferSchemaType<typeof accountSchema>;
