@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { InferSchemaType } from 'mongoose';
 
 /*
   - `_id` (ObjectId): Unique identifier for the branch (primary key).
@@ -13,22 +13,7 @@ import mongoose from 'mongoose';
     - `email` (String): Branch email address.
 */
 
-export interface IBranch {
-  _id: mongoose.Types.ObjectId;
-  branchName: string;
-  address: {
-    streetAddress: string;
-    city: string;
-    state: string;
-    postalCode: string;
-  };
-  contactInfo: {
-    phoneNumbers: string[];
-    email: string;
-  };
-}
-
-const branchSchema = new mongoose.Schema<IBranch>({
+const branchSchema = new mongoose.Schema({
   branchName: String,
   address: {
     streetAddress: String,
@@ -42,6 +27,8 @@ const branchSchema = new mongoose.Schema<IBranch>({
   },
 });
 
-const Branch = mongoose.model<IBranch>('Branch', branchSchema);
+const Branch = mongoose.model('Branch', branchSchema);
+
+export type IBranch = InferSchemaType<typeof branchSchema>;
 
 export default Branch;

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { InferSchemaType } from 'mongoose';
 
 /*
   - `_id` (ObjectId): Unique identifier for the customer (primary key).
@@ -11,24 +11,7 @@ import mongoose from 'mongoose';
   - `address` (Object): Same structure as before (streetAddress, city, state, postalCode).
 */
 
-export interface ICustomer {
-  _id: mongoose.Types.ObjectId;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: Date;
-  contactInfo: {
-    phoneNumbers: string[];
-    email: string;
-    address: {
-      streetAddress: string;
-      city: string;
-      state: string;
-      postalCode: string;
-    };
-  };
-}
-
-const customerSchema = new mongoose.Schema<ICustomer>({
+const customerSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
   dateOfBirth: Date,
@@ -44,6 +27,8 @@ const customerSchema = new mongoose.Schema<ICustomer>({
   },
 });
 
-const Customer = mongoose.model<ICustomer>('Customer', customerSchema);
+const Customer = mongoose.model('Customer', customerSchema);
+
+export type ICustomer = InferSchemaType<typeof customerSchema>;
 
 export default Customer;

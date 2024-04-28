@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { InferSchemaType } from 'mongoose';
 
 /*
   - `_id` (ObjectId): Unique identifier for the transaction (primary key).
@@ -6,23 +6,26 @@ import mongoose from 'mongoose';
     - `senderId` (ObjectId): ID of the account that sent the transaction.
     - `recipientId` (ObjectId): ID of the account that received the transaction.
     }` (Object): Nested object containing the sender and recipient account IDs.
+  - `accountId` (ObjectId): ID of the account that the transaction is associated with.
+  - `transactionType` (String): Type of the transaction (e.g., 'deposit', 'withdrawal', 'transfer').
   - `amount` (Decimal): Amount of the transaction.
   - `timestamp` (ISODate): Date and time the transaction occurred.
   - `description` (String): Optional description of the transaction.
 */
 
-export interface ITransaction {
-  _id: mongoose.Types.ObjectId;
-  transactionParties: {
-    senderId: mongoose.Types.ObjectId;
-    recipientId: mongoose.Types.ObjectId;
-  };
-  amount: number;
-  timestamp: Date;
-  description?: string;
+// enum type for transactionType
+export enum TransactionType {
+  Withdrawal = 'withdrawal',
+  Deposit = 'deposit',
+  Transfer = 'transfer',
 }
 
-const transactionSchema = new mongoose.Schema<ITransaction>({
+const transactionSchema = new mongoose.Schema({
+  accountId: mongoose.Schema.Types.ObjectId,
+  transactionType: {
+    type: String,
+    enum: Object.values(TransactionType),
+  },
   transactionParties: {
     senderId: mongoose.Schema.Types.ObjectId,
     recipientId: mongoose.Schema.Types.ObjectId,
@@ -35,9 +38,8 @@ const transactionSchema = new mongoose.Schema<ITransaction>({
   description: String,
 });
 
-const Transaction = mongoose.model<ITransaction>(
-  'Transaction',
-  transactionSchema,
-);
+const Transaction = mongoose.model('Transaction', transactionSchema);
+
+export type ITransaction = InferSchemaType<typeof transactionSchema>;
 
 export default Transaction;

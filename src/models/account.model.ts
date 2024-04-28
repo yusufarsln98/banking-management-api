@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { InferSchemaType } from 'mongoose';
 
 /*
   - `_id` (ObjectId): Unique identifier for the account (primary key).
@@ -9,26 +9,25 @@ import mongoose from 'mongoose';
   - `openingDate` (Date): Date the account was opened.
 */
 
-export interface IAccount {
-  _id: mongoose.Types.ObjectId;
-  accountNumber: string;
-  customerId: mongoose.Types.ObjectId;
-  branchId: mongoose.Types.ObjectId;
-  balance: number;
-  openingDate: Date;
-}
-
-const accountSchema = new mongoose.Schema<IAccount>({
-  accountNumber: String,
+const accountSchema = new mongoose.Schema({
+  accountNumber: {
+    type: String,
+    unique: true,
+  },
   customerId: mongoose.Schema.Types.ObjectId,
   branchId: mongoose.Schema.Types.ObjectId,
-  balance: Number,
+  balance: {
+    type: Number,
+    default: 0,
+  },
   openingDate: {
     type: Date,
     default: Date.now,
   },
 });
 
-const Account = mongoose.model<IAccount>('Account', accountSchema);
+const Account = mongoose.model('Account', accountSchema);
+
+export type IAccount = InferSchemaType<typeof accountSchema>;
 
 export default Account;
