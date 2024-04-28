@@ -1,4 +1,6 @@
 import mongoose, { InferSchemaType } from 'mongoose';
+import Customer from './customer.model';
+import Branch from './branch.model';
 
 /*
   - `_id` (ObjectId): Unique identifier for the account (primary key).
@@ -24,7 +26,6 @@ const accountSchema = new mongoose.Schema({
     // check if there is a customer with the given ID
     validate: {
       validator: async function (customerId: string) {
-        const Customer = mongoose.model('Customer');
         const customer = await Customer.findById(customerId).exec();
         return !!customer;
       },
@@ -36,7 +37,6 @@ const accountSchema = new mongoose.Schema({
     // check if there is a branch with the given ID
     validate: {
       validator: async function (branchId: string) {
-        const Branch = mongoose.model('Branch');
         const branch = await Branch.findById(branchId).exec();
         return !!branch;
       },

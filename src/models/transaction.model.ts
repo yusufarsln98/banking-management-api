@@ -1,4 +1,5 @@
 import mongoose, { InferSchemaType } from 'mongoose';
+import Account from './account.model';
 
 /*
   - `_id` (ObjectId): Unique identifier for the transaction (primary key).
@@ -11,7 +12,7 @@ import mongoose, { InferSchemaType } from 'mongoose';
 */
 
 // enum type for transactionType
-export enum TransactionType {
+enum TransactionType {
   Withdrawal = 'withdrawal',
   Deposit = 'deposit',
   Transfer = 'transfer',
@@ -24,7 +25,6 @@ const transactionSchema = new mongoose.Schema({
     // check if there is an account with the given ID
     validate: {
       validator: async function (accountId: string) {
-        const Account = mongoose.model('Account');
         const account = await Account.findById(accountId).exec();
         return !!account;
       },
@@ -39,7 +39,6 @@ const transactionSchema = new mongoose.Schema({
     // check if there is an account with the given ID
     validate: {
       validator: async function (recipientId: string) {
-        const Account = mongoose.model('Account');
         const account = await Account.findById(recipientId).exec();
         return !!account;
       },
@@ -63,8 +62,32 @@ const transactionSchema = new mongoose.Schema({
   },
 });
 
+type ITransaction = InferSchemaType<typeof transactionSchema>;
+
+// trigger a post save hook to update the account balance
+transactionSchema.post('save', async function (transaction: ITransaction) {
+  // check if transactionType is 'transfer' or 'withdrawal'
+  if (
+    transaction.transactionType === TransactionType.Transfer ||
+    transaction.transactionType === TransactionType.Withdrawal
+  ) {
+    // reduce the amount from the account if enough balance
+    const account = await Account.findById(transaction.accountId);
+    const balance = account?.balance || 0;
+    if (balance < transaction.amount) {
+      throw new Error('Insufficient balance');
+    }
+    account!.balance -= transaction.amount;
+    await account?.save();
+  } else if (transaction.transactionType === TransactionType.Deposit) {
+    // add the amount to the account if transactionType is 'deposit'
+    const account = await Account.findById(transaction.accountId);
+    account!.balance += transaction.amount;
+    await account?.save();
+  }
+});
+
+export { ITransaction, TransactionType };
+
 const Transaction = mongoose.model('Transaction', transactionSchema);
-
-export type ITransaction = InferSchemaType<typeof transactionSchema>;
-
 export default Transaction;
